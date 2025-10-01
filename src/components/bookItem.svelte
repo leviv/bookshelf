@@ -7,10 +7,29 @@
 	export let currentBookIndex: number;
 
 	let bookImage: HTMLImageElement;
-	let spineColor = '#cccccc';
-	let textColor = '#ffffff';
+
+	function getTextColor(rgb: number[]) {
+		// Calculate text color based on brightness
+		const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
+		return brightness > 128 ? '#000000' : '#ffffff';
+	}
+
+	// Generate a random pastel color
+	let pastelColor = [
+		Math.floor(Math.random() * 106 + 150),
+		Math.floor(Math.random() * 106 + 150),
+		Math.floor(Math.random() * 106 + 150)
+	];
+	let spineColor = `rgb(
+		${pastelColor[0]}, 
+		${pastelColor[1]}, 
+		${pastelColor[2]}
+	)`;
+	let textColor = getTextColor(pastelColor);
 	let spineWidth = 25;
 	let bookCoverUrl = '';
+	let bookTitle = book.Title;
+	let hasImage = false;
 
 	// Calculate spine width based on number of pages
 	const numPages = book['Number of Pages'] || 0;
@@ -20,27 +39,19 @@
 	const coverWidth = 166;
 	const bookHeight = 220;
 
-	// Avoid fetching too many images
-	if (index < 15) {
-		const urlPrefix = 'https://covers.openlibrary.org/b/isbn/';
-		const isbn = book.ISBN.substring(2, book.ISBN.length - 1);
-		const urlSuffix = '-M.jpg';
-		bookCoverUrl = `${urlPrefix}${isbn}${urlSuffix}`;
-	}
+	const urlPrefix = 'https://covers.openlibrary.org/b/isbn/';
+	const isbn = book.ISBN.substring(2, book.ISBN.length - 1);
+	const urlSuffix = '-M.jpg';
+	bookCoverUrl = `${urlPrefix}${isbn}${urlSuffix}`;
 
 	const handleImageLoad = () => {
-		if (!bookImage || index > 15) {
-			return;
-		}
-
 		const getColor = () => {
 			const colorThief = new ColorThief();
 			const color = colorThief.getColor(bookImage);
 			spineColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
 
-			// Calculate text color based on brightness
-			const brightness = (color[0] * 299 + color[1] * 587 + color[2] * 114) / 1000;
-			textColor = brightness > 128 ? '#000000' : '#ffffff';
+			textColor = getTextColor(color);
+			hasImage = true;
 		};
 
 		if (bookImage.complete) {
@@ -91,7 +102,11 @@
 </div>
 <div
 	class="coverContainer"
-	style="--rotateY:{currentBookIndex === index ? '30deg' : '88.8deg'}
+	style="
+		--rotateY:{currentBookIndex === index ? '30deg' : '88.8deg'};
+		--spineColor:{spineColor}; 
+		--textColor:{textColor}; 
+		--bookHeight:{bookHeight}px; 
 	"
 >
 	<span class="bookCover" style="--bookHeight:{bookHeight}px; --coverWidth:{coverWidth}px;" />
@@ -107,6 +122,10 @@
 		on:error={handleImageError}
 		crossorigin="anonymous"
 	/>
+	{#if !hasImage}
+		<h2 class="bookTitle">{bookTitle}</h2>
+		<h3 class="bookAuthor">{book.Author}</h3>
+	{/if}
 </div>
 
 <style>
@@ -161,7 +180,12 @@
 	}
 
 	.coverContainer {
+		background-color: var(--spineColor);
+		height: var(--bookHeight);
 		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: space-between;
 		position: relative;
 		flex-shrink: 0;
 		overflow: hidden;
@@ -172,6 +196,14 @@
 		will-change: auto;
 		filter: brightness(0.8) contrast(2);
 		transform-style: preserve-3d;
+	}
+
+	.bookTitle {
+		position: absolute;
+		font-family: serif;
+		padding: 10px;
+		text-overflow: ellipsis;
+		color: var(--textColor);
 	}
 
 	.bookCover {
