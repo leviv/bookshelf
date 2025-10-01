@@ -170,7 +170,7 @@
 		margin-right: 0;
 		margin-top: 12px;
 		font-size: 12px;
-		font-family: 'DM Sans', sans-serif;
+		font-family: 'Libre Baskerville', serif;
 		writing-mode: vertical-rl;
 		user-select: none;
 		text-overflow: ellipsis;
@@ -200,10 +200,14 @@
 
 	.bookTitle {
 		position: absolute;
-		font-family: serif;
+		font-family: 'Libre Baskerville', serif;
 		padding: 10px;
 		text-overflow: ellipsis;
 		color: var(--textColor);
+	}
+
+	.bookAuthor {
+		font-family: 'Josefin Sans', sans-serif;
 	}
 
 	.bookCover {

@@ -11,11 +11,18 @@
 		dynamicTyping: true
 	});
 
-	// Sort by only read books
+	// Filter by only read books
 	books = books.filter((book) => book['Read Count'] > 0);
 
-	// Sort by only books with reviews
+	// Filter by only books with reviews
 	books = books.filter((book) => book['My Review']);
+
+	// Sort by date read, most recent first
+	books.sort((a, b) => {
+		const dateA = new Date(a['Date Read'] || a['Date Added'] || '');
+		const dateB = new Date(b['Date Read'] || b['Date Added'] || '');
+		return dateB.getTime() - dateA.getTime();
+	});
 
 	if (errors.length) {
 		console.log('errors', errors);
@@ -65,7 +72,9 @@
 		<button
 			class="book"
 			on:click={() => bookClicked(index)}
-			style="--width:{currentBookIndex === index ? bookWidth : getSpineWidth(book)}px;"
+			style="--width:{currentBookIndex === index
+				? getSpineWidth(book) * 5
+				: getSpineWidth(book)}px;"
 		>
 			<BookItem {book} {index} {currentBookIndex} />
 		</button>
@@ -73,6 +82,7 @@
 </div>
 
 {#if currentBookIndex !== -1 && book}
+	<hr />
 	<div class="review">
 		<h2>My review of {bookTitle}</h2>
 		<h4>Reviewed on {reviewDate}</h4>
@@ -105,5 +115,15 @@
 		transition: all 500ms ease;
 		will-change: auto;
 		width: var(--width);
+	}
+
+	.review {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 0 16px;
+	}
+
+	.review h2 {
+		font-family: 'Yeseva One', serif;
 	}
 </style>
