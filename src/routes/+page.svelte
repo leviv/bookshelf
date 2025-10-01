@@ -4,7 +4,7 @@
 
 	let bookData = data;
 
-	const handleFileSelect = (event: Event) => {
+	function handleFileSelect(event: Event) {
 		const input = event.target as HTMLInputElement;
 		if (!input.files || input.files.length === 0) {
 			return;
@@ -19,7 +19,7 @@
 			}
 		};
 		reader.readAsText(file);
-	};
+	}
 </script>
 
 <svelte:head>
