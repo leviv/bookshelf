@@ -3,7 +3,7 @@
 
 	export let book: Book;
 
-	function getReviewDate() {
+	function getReviewDate(book: Book) {
 		// Sometimes the user doesn't specify a read date
 		// fall back to the added date which should always exist
 		const dateStr = book['Date Read'] || book['Date Added'];
@@ -18,7 +18,7 @@
 		});
 	}
 
-	function getReview() {
+	function getReview(book: Book) {
 		const reviewText = book['My Review'] || '';
 		return reviewText.replace(/\n/g, '<br/>');
 	}
@@ -27,10 +27,10 @@
 <hr />
 <div class="review">
 	<h2>My review of {book.Title}</h2>
-	<h4>Reviewed on {getReviewDate()}</h4>
+	<h4>Reviewed on {getReviewDate(book)}</h4>
 	<p>My rating: {book['My Rating']} / 5</p>
 	<p>Average rating: {book['Average Rating']} / 5</p>
-	<p>{@html getReview()}</p>
+	<p>{@html getReview(book)}</p>
 </div>
 
 <style>
@@ -42,5 +42,9 @@
 
 	.review h2 {
 		font-family: 'Yeseva One', serif;
+	}
+
+	hr {
+		width: 90%;
 	}
 </style>

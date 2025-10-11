@@ -3,6 +3,7 @@
 	import type { Book } from './bookTypes.js';
 	import BookItem from './bookItem.svelte';
 	import BookReview from './bookReview.svelte';
+	import { getBookWidth } from '$lib/utils.js';
 
 	export let bookData: string;
 
@@ -42,34 +43,26 @@
 	})();
 
 	let currentBookIndex = -1;
-	const width = 41.5;
 
 	$: book = currentBookIndex !== -1 ? books[currentBookIndex] : null;
 
 	$: bookClicked = (index: number) => {
 		currentBookIndex = index === currentBookIndex ? -1 : index;
-		console.log('book', books[index]);
-	};
-
-	const getSpineWidth = (book: Book) => {
-		const numPages = book['Number of Pages'] || 0;
-		const minWidth = 15;
-		return minWidth + numPages / 10;
 	};
 </script>
 
-<div class="bookshelf">
-	{#each books as book, index}
-		<button
-			class="book"
-			on:click={() => bookClicked(index)}
-			style="--width:{currentBookIndex === index
-				? getSpineWidth(book) + 150
-				: getSpineWidth(book)}px;"
-		>
-			<BookItem {book} {index} {currentBookIndex} />
-		</button>
-	{/each}
+<div class="bookshelf-container">
+	<div class="bookshelf">
+		{#each books as book, index}
+			<button
+				class="book"
+				on:click={() => bookClicked(index)}
+				style="--width:{getBookWidth(book['Number of Pages'], currentBookIndex === index)}px;"
+			>
+				<BookItem {book} {index} {currentBookIndex} />
+			</button>
+		{/each}
+	</div>
 </div>
 
 {#if currentBookIndex !== -1 && book}
@@ -77,14 +70,23 @@
 {/if}
 
 <style>
+	.bookshelf-container {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		overflow-x: scroll;
+	}
+
 	.bookshelf {
 		display: flex;
+		padding: 0px 8px 16px 8px;
 		gap: 8px;
-		overflow-x: scroll;
+		overflow-x: hidden;
 		padding-bottom: 16px;
 	}
 
 	.book {
+		padding: 0;
 		width: var(--width);
 		background-color: #00000000;
 		border: none;

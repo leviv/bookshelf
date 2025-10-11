@@ -97,7 +97,6 @@
 	}
 
 	footer {
-		width: 800px;
 		margin-right: auto;
 		margin-left: auto;
 		margin-top: auto;

@@ -1,4 +1,11 @@
 <script lang="ts">
+	import {
+		getBookWidth,
+		getRandomPastel,
+		getRandomPastelRGB,
+		getSpineWidth,
+		getTextColor
+	} from '$lib/utils.js';
 	import type { Book } from './bookTypes.js';
 	import ColorThief from 'colorthief';
 
@@ -26,34 +33,17 @@
 	}
 
 	let bookImage: HTMLImageElement;
-
-	function getTextColor(rgb: number[]) {
-		// Calculate text color based on brightness
-		const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
-		return brightness > 128 ? '#000000' : '#ffffff';
-	}
-
-	// Generate a random pastel color
-	let pastelColor = [
-		Math.floor(Math.random() * 106 + 150),
-		Math.floor(Math.random() * 106 + 150),
-		Math.floor(Math.random() * 106 + 150)
-	];
-	let spineColor = `rgb(
-		${pastelColor[0]}, 
-		${pastelColor[1]}, 
-		${pastelColor[2]}
-	)`;
+	let pastelColor = getRandomPastel();
+	let spineColor = getRandomPastelRGB(pastelColor);
 	let textColor = getTextColor(pastelColor);
-	let spineWidth = 25;
 	let bookCoverUrl = '';
 	let bookTitle = book.Title;
 	let hasImage = false;
 
 	// Calculate spine width based on number of pages
 	const numPages = book['Number of Pages'] || 0;
-	const minWidth = 15;
-	spineWidth = minWidth + numPages / 10;
+	const spineWidth = getSpineWidth(numPages);
+	const bookWidth = getBookWidth(numPages, currentBookIndex === index);
 
 	const coverWidth = 166;
 	const bookHeight = 220;
@@ -102,7 +92,7 @@
 <div
 	class="spineContainer"
 	style="
-		--spineWidth:{spineWidth}px; 
+		--bookWidth:{bookWidth}px; 
 		--bookHeight:{bookHeight}px; 
 		--spineColor:{spineColor}; 
 		--textColor:{textColor}; 
@@ -161,7 +151,7 @@
 		display: flex;
 		align-items: flex-start;
 		justify-content: center;
-		width: var(--spineWidth);
+		width: var(--bookWidth);
 		height: var(--bookHeight);
 		flex-shrink: 0;
 		transform-origin: right center;
