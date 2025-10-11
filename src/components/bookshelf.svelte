@@ -19,7 +19,9 @@
 		dynamicTyping: true
 	});
 
-	$: errors = parsedData.errors;
+	if (errors.length > 0) {
+		console.log(errors);
+	}
 
 	// Process books reactively when parsedData changes
 	$: books = (() => {
@@ -39,13 +41,8 @@
 		return filteredBooks;
 	})();
 
-	if (errors.length) {
-		console.log('errors', errors);
-	}
-
 	let currentBookIndex = -1;
 	const width = 41.5;
-	const bookWidth = width * 5;
 
 	$: book = currentBookIndex !== -1 ? books[currentBookIndex] : null;
 
@@ -67,7 +64,7 @@
 			class="book"
 			on:click={() => bookClicked(index)}
 			style="--width:{currentBookIndex === index
-				? getSpineWidth(book) * 5
+				? getSpineWidth(book) + 150
 				: getSpineWidth(book)}px;"
 		>
 			<BookItem {book} {index} {currentBookIndex} />
@@ -88,6 +85,7 @@
 	}
 
 	.book {
+		width: var(--width);
 		background-color: #00000000;
 		border: none;
 		display: flex;
@@ -101,6 +99,5 @@
 		gap: 0px;
 		transition: all 500ms ease;
 		will-change: auto;
-		width: var(--width);
 	}
 </style>

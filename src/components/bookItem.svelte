@@ -6,6 +6,25 @@
 	export let index: number;
 	export let currentBookIndex: number;
 
+	const ANIMATION_DURATION = 500;
+
+	let prevBookIndex = -1;
+	let isAnimating = false;
+
+	// Track when this book starts animating (transitioning away from being selected)
+	$: {
+		const wasSelected = prevBookIndex === index;
+		const isSelected = currentBookIndex === index;
+		prevBookIndex = currentBookIndex;
+
+		if (wasSelected && !isSelected) {
+			isAnimating = true;
+			setTimeout(() => {
+				isAnimating = false;
+			}, ANIMATION_DURATION);
+		}
+	}
+
 	let bookImage: HTMLImageElement;
 
 	function getTextColor(rgb: number[]) {
@@ -87,7 +106,8 @@
 		--bookHeight:{bookHeight}px; 
 		--spineColor:{spineColor}; 
 		--textColor:{textColor}; 
-		--rotateY:{currentBookIndex === index ? '-60deg' : '0deg'}
+		--rotateY:{currentBookIndex === index ? '-60deg' : '0deg'};
+		--animation-duration:{ANIMATION_DURATION}ms;
 		"
 >
 	<span
@@ -107,6 +127,8 @@
 		--spineColor:{spineColor}; 
 		--textColor:{textColor}; 
 		--bookHeight:{bookHeight}px; 
+		--opacity:{currentBookIndex === index || isAnimating ? 1 : 0};
+		--animation-duration:{ANIMATION_DURATION}ms;
 	"
 >
 	<span class="bookCover" style="--bookHeight:{bookHeight}px; --coverWidth:{coverWidth}px;" />
@@ -192,10 +214,15 @@
 		transform-origin: left center;
 		transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(var(--rotateY))
 			rotateZ(0deg) skew(0deg, 0deg);
-		transition: all 500ms ease;
+		transition:
+			height var(--animation-duration) ease,
+			transform var(--animation-duration) ease;
 		will-change: auto;
 		filter: brightness(0.8) contrast(2);
 		transform-style: preserve-3d;
+		opacity: var(--opacity);
+		border-top-right-radius: 5px;
+		border-bottom-right-radius: 5px;
 	}
 
 	.bookTitle {
