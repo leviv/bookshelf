@@ -7,22 +7,11 @@
 
 	export let bookData: string;
 
-	let { data: books, errors } = Papa.parse<Book>(bookData, {
-		header: true,
-		skipEmptyLines: true,
-		dynamicTyping: true
-	});
-
-	// Make the parsing reactive to bookData changes
 	$: parsedData = Papa.parse<Book>(bookData, {
 		header: true,
 		skipEmptyLines: true,
 		dynamicTyping: true
 	});
-
-	if (errors.length > 0) {
-		console.log(errors);
-	}
 
 	// Process books reactively when parsedData changes
 	$: books = (() => {
@@ -79,16 +68,19 @@
 
 	.bookshelf {
 		display: flex;
-		padding: 0px 8px 16px 8px;
+		padding: 0px 16px 16px 16px;
 		gap: 8px;
-		overflow-x: hidden;
+		overflow-x: auto;
 		padding-bottom: 16px;
+		width: fit-content;
+		max-width: none;
 	}
 
 	.book {
+		box-sizing: border-box;
 		padding: 0;
 		width: var(--width);
-		background-color: #00000000;
+		background-color: transparent;
 		border: none;
 		display: flex;
 		flex-direction: row;
@@ -99,7 +91,7 @@
 		perspective: 1000px;
 		-webkit-perspective: 1000px;
 		gap: 0px;
-		transition: all 500ms ease;
-		will-change: auto;
+		transition: width 500ms ease;
+		will-change: width;
 	}
 </style>

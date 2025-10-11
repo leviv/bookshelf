@@ -145,6 +145,7 @@
 		position: absolute;
 		inset: 0;
 		visibility: hidden;
+		width: 0;
 	}
 
 	.spineContainer {
@@ -167,7 +168,7 @@
 
 	.bookSpine {
 		pointer-events: none;
-		position: fixed;
+		position: absolute;
 		top: 0;
 		left: 0;
 		z-index: 50;
@@ -229,7 +230,7 @@
 
 	.bookCover {
 		pointer-events: none;
-		position: fixed;
+		position: absolute;
 		top: 0;
 		right: 0;
 		z-index: 50;
