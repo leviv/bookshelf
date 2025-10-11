@@ -11,6 +11,35 @@
 		dynamicTyping: true
 	});
 
+	// Make the parsing reactive to bookData changes
+	$: parsedData = Papa.parse<Book>(bookData, {
+		header: true,
+		skipEmptyLines: true,
+		dynamicTyping: true
+	});
+
+	$: errors = parsedData.errors;
+
+	// Process books reactively when parsedData changes
+	$: books = (() => {
+		if (!parsedData.data) return [];
+
+		let filteredBooks = parsedData.data
+			// Filter by only read books
+			.filter((book: Book) => book['Read Count'] > 0)
+			// Filter by only books with reviews
+			.filter((book: Book) => book['My Review']);
+
+		// Sort by date read, most recent first
+		filteredBooks.sort((a, b) => {
+			const dateA = new Date(a['Date Read'] || a['Date Added'] || '');
+			const dateB = new Date(b['Date Read'] || b['Date Added'] || '');
+			return dateB.getTime() - dateA.getTime();
+		});
+
+		return filteredBooks;
+	})();
+
 	// Filter by only read books
 	books = books.filter((book) => book['Read Count'] > 0);
 
