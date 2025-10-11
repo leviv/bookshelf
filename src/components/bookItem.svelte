@@ -33,25 +33,38 @@
 	}
 
 	let bookImage: HTMLImageElement;
-	let pastelColor = getRandomPastel();
-	let spineColor = getRandomPastelRGB(pastelColor);
-	let textColor = getTextColor(pastelColor);
-	let bookCoverUrl = '';
-	let bookTitle = book.Title;
 	let hasImage = false;
 
-	// Calculate spine width based on number of pages
-	const numPages = book['Number of Pages'] || 0;
-	const spineWidth = getSpineWidth(numPages);
-	const bookWidth = getBookWidth(numPages, currentBookIndex === index);
+	// Reactive variables that update when book changes
+	$: pastelColor = getRandomPastel();
+	$: spineColor = getRandomPastelRGB(pastelColor);
+	$: textColor = getTextColor(pastelColor);
+	$: bookTitle = book.Title;
+
+	// Calculate spine width based on number of pages - reactive
+	$: numPages = book['Number of Pages'] || 0;
+	$: spineWidth = getSpineWidth(numPages);
+	$: bookWidth = getBookWidth(numPages, currentBookIndex === index);
+
+	$: {
+		console.log('numPages:', numPages);
+		console.log('spineWidth:', spineWidth);
+		console.log('bookWidth:', bookWidth);
+	}
 
 	const coverWidth = 166;
 	const bookHeight = 220;
 
-	const urlPrefix = 'https://covers.openlibrary.org/b/isbn/';
-	const isbn = book.ISBN.substring(2, book.ISBN.length - 1);
-	const urlSuffix = '-M.jpg';
-	bookCoverUrl = `${urlPrefix}${isbn}${urlSuffix}`;
+	// Reactive book cover URL that updates when book changes
+	$: {
+		const urlPrefix = 'https://covers.openlibrary.org/b/isbn/';
+		const isbn = book.ISBN ? book.ISBN.substring(2, book.ISBN.length - 1) : '';
+		const urlSuffix = '-M.jpg';
+		bookCoverUrl = `${urlPrefix}${isbn}${urlSuffix}`;
+		hasImage = false;
+	}
+
+	let bookCoverUrl = '';
 
 	const handleImageLoad = () => {
 		const getColor = () => {
@@ -92,7 +105,7 @@
 <div
 	class="spineContainer"
 	style="
-		--bookWidth:{bookWidth}px; 
+		--spineWidth:{spineWidth}px; 
 		--bookHeight:{bookHeight}px; 
 		--spineColor:{spineColor}; 
 		--textColor:{textColor}; 
@@ -107,7 +120,7 @@
 		--spineWidth:{spineWidth}px;"
 	/>
 	<h2 class="spineTitle" style="--height:{bookHeight}px">
-		{book.Title}
+		{bookTitle}
 	</h2>
 </div>
 <div
@@ -152,7 +165,7 @@
 		display: flex;
 		align-items: flex-start;
 		justify-content: center;
-		width: var(--bookWidth);
+		width: var(--spineWidth);
 		height: var(--bookHeight);
 		flex-shrink: 0;
 		transform-origin: right center;
