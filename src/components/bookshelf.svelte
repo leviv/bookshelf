@@ -68,7 +68,7 @@
 
 	.bookshelf {
 		display: flex;
-		padding: 0px 16px 16px 16px;
+		padding: 0px 8px 16px 8px;
 		gap: 8px;
 		overflow-x: auto;
 		padding-bottom: 16px;
@@ -93,5 +93,6 @@
 		gap: 0px;
 		transition: width 500ms ease;
 		will-change: width;
+		cursor: pointer;
 	}
 </style>
